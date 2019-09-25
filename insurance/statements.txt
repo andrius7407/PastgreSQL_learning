@@ -1,16 +1,58 @@
 CREATE DATABASE insurance;
 
 CREATE TABLE brokers (
-	ID INT PRIMARY KEY,
+	ID SERIAL PRIMARY KEY,
 	NAME TEXT NOT NULL,
 	SURNAME TEXT NOT NULL,
 	EMAIL TEXT NOT NULL UNIQUE,
-	PASSWORD TEXT NOT NULL
-);
+	PASSWORD TEXT NOT NULL);
 
 CREATE TABLE customers (
-        ID INT PRIMARY KEY NOT NULL,
+	ID SERIAL PRIMARY KEY NOT NULL,
 	NAME TEXT NOT NULL,
 	SURNAME TEXT NOT NULL,
-	PERS_ID INT NOT NULL UNIQUE
-);
+	PERS_ID INT NOT NULL UNIQUE);
+
+CREATE TABLE policies (
+	ID SERIAL PRIMARY KEY NOT NULL,
+	BROK_ID INT references brokers(ID),
+	CUST_ID INT REFERENCES customers(ID),
+	TYPE TEXT  NOT NULL,
+	BEGINNING TIMESTAMPTZ NOT NULL,
+	ENDING TIMESTAMPTZ NOT NULL);
+
+CREATE TABLE contacts (
+	ID SERIAL PRIMARY KEY NOT NULL,
+	CUST_ID INT references customers(ID),
+	ADDRESS TEXT NOT NULL,
+	TEL VARCHAR(20) NOT NULL,
+	STATUS TEXT NOT NULL CHECK(STATUS = 'active' OR STATUS = 'inactive'),
+	TYPE TEXT NOT NULL CHECK(TYPE = 'home' OR TYPE = 'office' OR TYPE = 'mobile'));
+
+INSERT INTO public.brokers(
+	name, surname, email, password)
+	VALUES ('Giedrė', 'Nosamienė', 'giedre@draudimas.lt', 'dvidesimtdu');
+
+INSERT INTO public.brokers
+	VALUES ('Jonas', 'Jonaitis', 'jonas@draudimas.lt', 'penkiolika');
+	
+INSERT INTO public.brokers(
+	name, surname, email, password)
+	VALUES ('Gintaras', 'Tadauskas', 'gintaras@draudimas.lt', 'keturiolika');
+	
+INSERT INTO public.brokers(
+	name, surname, email, password)
+	VALUES ('Donatas', 'Mockus', 'donatas@draudimas.lt', 'vienuolika');	
+
+INSERT INTO public.customers(
+	name, surname, pers_id)
+	VALUES ('Emilis', 'Jankauskas', 5201003021045);
+
+INSERT INTO public.customers(
+	name, surname, pers_id)
+	VALUES ('Vilis', 'Elsbergas', 5201010281234), ('Petras', 'Kurmelis', 37012014231), 
+	('Jonas', 'Avyžius', 3330415), ('Selma', 'Lagerlof', 42201054562), ('Astrida', 'Lindgren', 23502169875);
+
+INSERT INTO public.policies(
+	brok_id, cust_id, type, beginning, ending)
+	VALUES (1, 1, 'life', '2018-12-31 24:00:00+02', '2019-12-31 24:00:00+02');
